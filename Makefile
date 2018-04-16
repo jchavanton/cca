@@ -33,7 +33,7 @@ ifeq ($(ENABLE_ABYSS_SERVER),yes)
   PROGS += $(SERVERPROGS_ABYSS)
 endif
 
-PROGS += pstream_inetd_server pstream_serial_server
+# PROGS += pstream_inetd_server pstream_serial_server
 
 INCLUDES = -I. $(shell $(XMLRPC_C_CONFIG) c++2 client abyss-server --cflags)
 
@@ -55,7 +55,7 @@ $(SERVERPROGS_CGI):%.cgi:%_cgi.o
 	$(CXXLD) -o $@ $^ $(LIBS_SERVER_CGI) $(LDFLAGS_ALL)
 
 $(SERVERPROGS_ABYSS):%:%.o
-	$(CXXLD) -o $@ $^ $(LIBS_SERVER_ABYSS) $(LDFLAGS_ALL)
+	$(CXXLD) -o $@ $^ $(LIBS_SERVER_ABYSS) $(LIBS_CLIENT) $(LDFLAGS_ALL)
 
 $(CLIENTPROGS):%:%.o
 	$(CXXLD) -o $@ $^ $(LIBS_CLIENT) $(LDFLAGS_ALL)

@@ -1,6 +1,3 @@
-// #define WIN32_LEAN_AND_MEAN  /* required by xmlrpc-c/server_abyss.hpp */
-
-
 
 #include <cassert>
 #include <stdexcept>
@@ -12,6 +9,35 @@ using namespace std;
 #include <xmlrpc-c/base.hpp>
 #include <xmlrpc-c/registry.hpp>
 #include <xmlrpc-c/server_abyss.hpp>
+#include <xmlrpc-c/client_simple.hpp>
+
+int kam_dlg_list() {
+	try {
+		string const serverUrl("http://147.75.69.33:4291/RPC2");
+		string const methodName("dlg.list");
+		xmlrpc_c::clientSimple myClient;
+		xmlrpc_c::value result;
+		myClient.call(serverUrl, methodName, &result);
+		xmlrpc_c::value_array arrayData = xmlrpc_c::value_array(result);
+		cout << "calls : " << arrayData.size() << endl;
+		vector<xmlrpc_c::value> callValues = arrayData.vectorValueValue();
+		while (!callValues.empty()) {
+			xmlrpc_c::value call = callValues.back();
+			if (call.type() == 7) {
+				xmlrpc_c::value_struct call_struct = xmlrpc_c::value_struct(call);
+				std::map<std::string, xmlrpc_c::value> call_cstruct(call_struct);
+				string callId = xmlrpc_c::value_string(call_cstruct["call-id"]);
+				cout << "call["<< callId <<"]" << endl;
+			}
+			callValues.pop_back();
+
+		}
+	} catch (exception const& e) {
+		cerr << "Client threw error: " << e.what() << endl;
+	} catch (...) {
+		cerr << "Client threw unexpected error." << endl;
+	}
+}
 
 class MethodDlgTerminate : public xmlrpc_c::method {
 public:
@@ -31,6 +57,7 @@ public:
 };
 
 int main(int const, const char ** const) {
+	kam_dlg_list();
 	try {
 		xmlrpc_c::registry myRegistry;
 		xmlrpc_c::methodPtr const MethodDlgTerminateP(new MethodDlgTerminate);
