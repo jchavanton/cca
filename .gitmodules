@@ -1,0 +1,3 @@
+[submodule "xmlrpc"]
+	path = xmlrpc
+	url = https://github.com/jchavanton/xmlrpc.git
