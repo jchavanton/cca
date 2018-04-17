@@ -1,4 +1,4 @@
-
+#include <cstdlib>
 #include <cassert>
 #include <stdexcept>
 #include <iostream>
@@ -86,7 +86,12 @@ public:
 	}
 };
 
-int main(int const, const char ** const) {
+int main(int const argc, const char *argv[]) {
+	cout<<"\nusage: "<< argv[0] << " <local_port> <kamailio_ip:port> <log_filename>\n\n";
+	int port = 8080;
+	if (argc > 1) port = atoi(argv[1]);
+	string abyssLogFileName = "/tmp/abyss.log";
+	if (argc > 2) abyssLogFileName.assign(argv[2]);
 	kam_dlg_list();
 	try {
 		xmlrpc_c::registry myRegistry;
@@ -96,10 +101,10 @@ int main(int const, const char ** const) {
 		xmlrpc_c::serverAbyss myAbyssServer(
 			xmlrpc_c::serverAbyss::constrOpt()
 				.registryP(&myRegistry)
-				.portNumber(8080)
-				.logFileName("/tmp/abyss.log")
+				.portNumber(port)
+				.logFileName(abyssLogFileName)
 		);
-		cout << "server starting 8080" << endl;
+		cout << "server listening on port :"<< port << endl;
 		myAbyssServer.run();
 		// xmlrpc_c::serverAbyss.run() never returns
 		assert(false);
