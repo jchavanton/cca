@@ -1,5 +1,5 @@
 POST /RPC2 HTTP/1.1
-Content-Length: 317
+Content-Length: 315
 Host: 127.0.0.1:8080
 
 <?xml version='1.0' encoding='UTF-8'?>
@@ -7,6 +7,6 @@ Host: 127.0.0.1:8080
 <methodName>mi</methodName>
 <params><param>
 <value><string>dlg_terminate_dlg</string></value></param>
-<param><value><string>1495806948_108862417@74.120.93.198</string></value></param>
+<param><value><string>91G6wdBVZZMKug7OOFnjml62qKNpdTHt</string></value></param>
 <param><value><string>gK0815dd46</string></value></param></params>
 </methodCall>
