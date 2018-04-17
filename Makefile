@@ -6,10 +6,10 @@
 # CXXFLAGS= -std=c++11
 
 ifeq ($(SRCDIR),)
-SRCDIR = $(CURDIR)/..
+SRCDIR = $(CURDIR)/xmlrpc
 BLDDIR = $(SRCDIR)
 endif
-SUBDIR=ccc/src
+SUBDIR=../src
 
 include $(BLDDIR)/config.mk
 
