@@ -23,11 +23,11 @@ int kam_dlg_dlg_list(string const &callId) {
 		paramList.add(callIdParam);
 
 		myClient.call(serverUrl, methodName, paramList, &result);
-		xmlrpc_c::value_struct call_struct = xmlrpc_c::value_struct(result);
-		std::map<std::string, xmlrpc_c::value> call_cstruct(call_struct);
+		xmlrpc_c::value_struct call_struct(result);
+		map<string, xmlrpc_c::value> call_cstruct(call_struct);
 		string callId = xmlrpc_c::value_string(call_cstruct["call-id"]);
-		xmlrpc_c::value_struct callee_struct = xmlrpc_c::value_struct(call_cstruct["callee"]);
-		std::map<std::string, xmlrpc_c::value> callee_cstruct(callee_struct);
+		xmlrpc_c::value_struct callee_struct(call_cstruct["callee"]);
+		map<string, xmlrpc_c::value> callee_cstruct(callee_struct);
 		string totag = xmlrpc_c::value_string(callee_cstruct["tag"]);
 		cout << "call["<< callId <<"] totag["<< totag <<"]"<< endl;
 
@@ -45,14 +45,14 @@ int kam_dlg_list() {
 		xmlrpc_c::clientSimple myClient;
 		xmlrpc_c::value result;
 		myClient.call(serverUrl, methodName, &result);
-		xmlrpc_c::value_array arrayData = xmlrpc_c::value_array(result);
+		xmlrpc_c::value_array arrayData(result);
 		cout << "calls : " << arrayData.size() << endl;
 		vector<xmlrpc_c::value> callValues = arrayData.vectorValueValue();
 		while (!callValues.empty()) {
 			xmlrpc_c::value call = callValues.back();
 			if (call.type() == 7) {
-				xmlrpc_c::value_struct call_struct = xmlrpc_c::value_struct(call);
-				std::map<std::string, xmlrpc_c::value> call_cstruct(call_struct);
+				xmlrpc_c::value_struct call_struct(call);
+				map<string, xmlrpc_c::value> call_cstruct(call_struct);
 				string callId = xmlrpc_c::value_string(call_cstruct["call-id"]);
 				// cout << "call["<< callId <<"]" << endl;
 				kam_dlg_dlg_list(callId);
