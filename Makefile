@@ -3,7 +3,7 @@
 # on included make files or configuration parameters.  It should not use
 # libtool.  Also, we don't try to build or rebuild the libraries on which
 # these programs depend.
-# CXXFLAGS= -std=c++11
+CXXFLAGS= -std=c++11 -g
 
 ifeq ($(SRCDIR),)
 SRCDIR = $(CURDIR)/xmlrpc

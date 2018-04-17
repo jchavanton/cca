@@ -60,6 +60,8 @@ map<string, xmlrpc_c::value> kam_dlg_dlg_list(string const kamXmlRpc, string con
 	} catch (...) {
 		cerr << "Client threw unexpected error." << endl;
 	}
+	map<string, xmlrpc_c::value> callInfo;
+	return callInfo;
 }
 
 int kam_dlg_list(string const kamXmlRpc) {
@@ -121,6 +123,7 @@ public:
 	void execute(xmlrpc_c::paramList const& paramList, xmlrpc_c::value * const retvalP) {
 		string const method(paramList.getString(0));
 		string const callId(paramList.getString(1));
+		cout << "received mi method["<<method<<"]callid["<<callId<<"]\n";
 		// string const fromTag(paramList.getString(2));
 		paramList.verifyEnd(3);
 
