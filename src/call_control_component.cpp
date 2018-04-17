@@ -11,6 +11,22 @@ using namespace std;
 #include <xmlrpc-c/server_abyss.hpp>
 #include <xmlrpc-c/client_simple.hpp>
 
+
+int kam_core_version(string const kamXmlRpc) {
+	try {
+		string const methodName("core.version");
+		xmlrpc_c::clientSimple myClient;
+		xmlrpc_c::value result;
+		myClient.call(kamXmlRpc, methodName, &result);
+		string kamailioVersion = xmlrpc_c::value_string(result);
+		cout<<kamXmlRpc<<" running version:"<<kamailioVersion<<endl;
+	} catch (exception const& e) {
+		cerr << "Client threw error: " << e.what() << endl;
+	} catch (...) {
+		cerr << "Client threw unexpected error." << endl;
+	}
+}
+
 int kam_dlg_dlg_list(string const kamXmlRpc, string const &callId) {
 	try {
 		string const methodName("dlg.dlg_list");
@@ -100,6 +116,7 @@ int main(int const argc, const char *argv[]) {
 	if (argc > 3) kamXmlRpc = kamXmlRpc + argv[3] + "/RPC2";
 	else kamXmlRpc = kamXmlRpc + "127.0.0.1:4291/RPC2";
 
+	kam_core_version(kamXmlRpc);
 	kam_dlg_list(kamXmlRpc);
 	try {
 		xmlrpc_c::registry myRegistry;
