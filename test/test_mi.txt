@@ -8,5 +8,5 @@ Host: 127.0.0.1:8080
 <params><param>
 <value><string>dlg_terminate_dlg</string></value></param>
 <param><value><string>CALL_ID</string></value></param>
-<param><value><string>gK0815dd46</string></value></param></params>
+<param><value><string>TO_TAG</string></value></param></params>
 </methodCall>
