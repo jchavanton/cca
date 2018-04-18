@@ -1,2 +1,2 @@
 #!/bin/sh
-call_control_agent 4291 "/var/log/ccc.log" "147.75.69.33:4291"
+call_control_agent -p 4291 -l "/var/log/ccc.log" -s "147.75.69.33:4291"

@@ -148,18 +148,33 @@ private:
 	string _kamXmlRpc;
 };
 
-int main(int const argc, const char *argv[]) {
-	cout<<"\nusage: "<< argv[0] << " <local_port> <kamailio_ip:port> <log_filename>\n\n";
+int main(int argc, char **argv) {
+	cout<<"\nusage: "<< argv[0] << " -p <local_port> -s <kamailio_ip:port> -l <log_filename> -c show active calls at startup \n\n";
+
 	int port = 8080;
-	if (argc > 1) port = atoi(argv[1]);
+	string kamXmlRpc = "http://127.0.0.1:4291/RPC2";
 	string abyssLogFileName = "/tmp/abyss.log";
-	if (argc > 2) abyssLogFileName.assign(argv[2]);
-	string kamXmlRpc = "http://";
-	if (argc > 3) kamXmlRpc = kamXmlRpc + argv[3] + "/RPC2";
-	else kamXmlRpc = kamXmlRpc + "127.0.0.1:4291/RPC2";
+	int opt;
+	while ((opt = getopt(argc, argv, "p:s:l:c")) != -1) {
+		switch (opt) {
+			case 'p':
+				port = atoi(optarg);
+				break;
+			case 's':
+				kamXmlRpc = "";
+				kamXmlRpc = kamXmlRpc+"http://"+optarg+"/RPC2";
+				break;
+			case 'l':
+				abyssLogFileName = optarg;
+				break;
+			case 'c':
+				kam_dlg_list(kamXmlRpc);
+				break;
+		}
+	}
 
 	kam_core_version(kamXmlRpc);
-	kam_dlg_list(kamXmlRpc);
+
 	try {
 		xmlrpc_c::registry myRegistry;
 		xmlrpc_c::methodPtr const MethodDlgTerminateP(new MethodDlgTerminate(kamXmlRpc));
