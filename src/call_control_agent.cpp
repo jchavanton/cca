@@ -20,9 +20,9 @@ int kam_core_version(string const kamXmlRpc) {
 		string kamailioVersion = xmlrpc_c::value_string(result);
 		cout<<kamXmlRpc<<" running version:"<<kamailioVersion<<endl;
 	} catch (exception const& e) {
-		cerr << "Client threw error: " << e.what() << endl;
+		cerr << "[core.version] client threw error: " << e.what() << endl;
 	} catch (...) {
-		cerr << "Client threw unexpected error." << endl;
+		cerr << "[core.version] client threw unexpected error." << endl;
 	}
 }
 
@@ -38,12 +38,14 @@ map<string, xmlrpc_c::value> kam_dlg_dlg_list(string const kamXmlRpc, string con
 		myClient.call(kamXmlRpc, methodName, paramList, &result);
 
 		if (result.type() != xmlrpc_c::value::TYPE_STRUCT) {
+				cout << "[dlg.dlg_list] call not found" << endl;
 				map<string, xmlrpc_c::value> empty;
 				return empty;
 		}
 		xmlrpc_c::value_struct call_struct(result);
 		map<string, xmlrpc_c::value> callInfo(call_struct);
 		string callId = xmlrpc_c::value_string(callInfo["call-id"]);
+		int callState = xmlrpc_c::value_int(callInfo["state"]);
 		// callee info
 		xmlrpc_c::value_struct callee_struct(callInfo["callee"]);
 		map<string, xmlrpc_c::value> calleeInfo(callee_struct);
@@ -52,13 +54,13 @@ map<string, xmlrpc_c::value> kam_dlg_dlg_list(string const kamXmlRpc, string con
 		xmlrpc_c::value_struct caller_struct = xmlrpc_c::value_struct(callInfo["caller"]);
 		map<string, xmlrpc_c::value> caller_cstruct(caller_struct);
 		string fromtag = xmlrpc_c::value_string(caller_cstruct["tag"]);
-		cout << "call["<< callId <<"]fromtag["<< fromtag <<"]totag["<< totag <<"]"<< endl;
+		cout << "[dlg.dlg_list] call["<< callId <<"]fromtag["<< fromtag <<"]totag["<< totag <<"]state["<<callState<<"]"<<endl;
 		return callInfo;
 
 	} catch (exception const& e) {
-		cerr << "Client threw error: " << e.what() << endl;
+		cerr << "[dlg.dlg_list] client threw error: " << e.what() << endl;
 	} catch (...) {
-		cerr << "Client threw unexpected error." << endl;
+		cerr << "[dlg.dlg_list] client threw unexpected error." << endl;
 	}
 	map<string, xmlrpc_c::value> callInfo;
 	return callInfo;
@@ -85,13 +87,15 @@ int kam_dlg_list(string const kamXmlRpc) {
 			callValues.pop_back();
 		}
 	} catch (exception const& e) {
-		cerr << "Client threw error: " << e.what() << endl;
+		cerr << "[dlg.list] client threw error: " << e.what() << endl;
+		return 500;
 	} catch (...) {
-		cerr << "Client threw unexpected error." << endl;
+		cerr << "[dlg.list] client threw unexpected error." << endl;
 	}
+	return 200;
 }
 
-int kam_dlg_terminate_dlg(string const kamXmlRpc, string const callId, string const fromTag, string const toTag) {
+std::tuple<int, string> kam_dlg_terminate_dlg(string const kamXmlRpc, string const callId, string const fromTag, string const toTag) {
 	try {
 		string const methodName("dlg.terminate_dlg");
 		xmlrpc_c::clientSimple myClient;
@@ -106,10 +110,13 @@ int kam_dlg_terminate_dlg(string const kamXmlRpc, string const callId, string co
 		myClient.call(kamXmlRpc, methodName, paramList, &result);
 
 	} catch (exception const& e) {
-		cerr << "Client threw error: " << e.what() << endl;
+		cerr << "[dlg.terminate_dlg] client threw error: " << e.what() << endl;
+		return make_tuple(500, e.what());
 	} catch (...) {
-		cerr << "Client threw unexpected error." << endl;
+		cerr << "[dlg.terminate_dlg] client threw unexpected error." << endl;
+		return make_tuple(500, "unexpected error");
 	}
+	return make_tuple(200, "OK");
 }
 
 class MethodDlgTerminate : public xmlrpc_c::method {
@@ -123,8 +130,8 @@ public:
 	void execute(xmlrpc_c::paramList const& paramList, xmlrpc_c::value * const retvalP) {
 		string const method(paramList.getString(0));
 		string const callId(paramList.getString(1));
-		cout << "received mi method["<<method<<"]callid["<<callId<<"]\n";
-		// string const fromTag(paramList.getString(2));
+		string const fromTag(paramList.getString(2));
+		cout << "[received][mi] method["<<method<<"]callid["<<callId<<"]fromtag["<<fromTag<<"]\n";
 		paramList.verifyEnd(3);
 
 		map<string, xmlrpc_c::value> callInfo = kam_dlg_dlg_list(_kamXmlRpc, callId);
@@ -132,17 +139,18 @@ public:
 				*retvalP = xmlrpc_c::value_int(404);
 				return;
 		}
-		*retvalP = xmlrpc_c::value_int(200);
-		// caller info
-		xmlrpc_c::value_struct caller_struct(callInfo["caller"]);
-		map<string, xmlrpc_c::value> callerInfo(caller_struct);
-		string fromTag = xmlrpc_c::value_string(callerInfo["tag"]);
+
+		// // caller info
+		// xmlrpc_c::value_struct caller_struct(callInfo["caller"]);
+		// map<string, xmlrpc_c::value> callerInfo(caller_struct);
+		// string fromTag = xmlrpc_c::value_string(callerInfo["tag"]);
 		// callee info
 		xmlrpc_c::value_struct callee_struct(callInfo["callee"]);
 		map<string, xmlrpc_c::value> calleeInfo(callee_struct);
 		string toTag = xmlrpc_c::value_string(calleeInfo["tag"]);
 		// Disconnect the call on Kamailio
-		kam_dlg_terminate_dlg(_kamXmlRpc, callId, fromTag, toTag);
+		tuple<int, string> res = kam_dlg_terminate_dlg(_kamXmlRpc, callId, fromTag, toTag);
+		*retvalP = xmlrpc_c::value_int(get<0>(res));
 	}
 private:
 	string _kamXmlRpc;
@@ -186,7 +194,7 @@ int main(int argc, char **argv) {
 				.portNumber(port)
 				.logFileName(abyssLogFileName)
 		);
-		cout << "server listening on port :"<< port << endl;
+		cout << "server listening on port: "<< port << endl;
 		myAbyssServer.run();
 		// xmlrpc_c::serverAbyss.run() never returns
 		assert(false);
