@@ -24,7 +24,7 @@ LDFLAGS_ALL = $(LDFLAGS_PERSONAL) $(LDFLAGS) $(LADD)
 XMLRPC_C_CONFIG = $(BLDDIR)/xmlrpc-c-config.test
 
 SERVERPROGS_ABYSS = \
-  call_control_component
+  call_control_agent
 
 # Build up PROGS:
 PROGS =
@@ -100,3 +100,6 @@ dep depend:
 # an example of what a program outside this package would do, so we can't
 # go weaving it into the rest of the package.  Ergo, a developer must
 # carefully clean and remake examples as he updates other parts of the tree.
+
+install: call_control_agent
+	mv call_control_agent /usr/local/bin
