@@ -133,10 +133,13 @@ public:
 		string const fromTag(paramList.getString(2));
 		cout << "[received][mi] method["<<method<<"]callid["<<callId<<"]fromtag["<<fromTag<<"]\n";
 		paramList.verifyEnd(3);
+		map<string, xmlrpc_c::value> result;
 
 		map<string, xmlrpc_c::value> callInfo = kam_dlg_dlg_list(_kamXmlRpc, callId);
 		if (callInfo.empty()) {
-				*retvalP = xmlrpc_c::value_int(404);
+				result["faultCode"] = xmlrpc_c::value_int(404);
+				result["faultString"] = xmlrpc_c::value_string("Dialog not found");
+				*retvalP = xmlrpc_c::value_struct(result);
 				return;
 		}
 
@@ -150,7 +153,9 @@ public:
 		string toTag = xmlrpc_c::value_string(calleeInfo["tag"]);
 		// Disconnect the call on Kamailio
 		tuple<int, string> res = kam_dlg_terminate_dlg(_kamXmlRpc, callId, fromTag, toTag);
-		*retvalP = xmlrpc_c::value_int(get<0>(res));
+		result["faultCode"] = xmlrpc_c::value_int(get<0>(res));
+		result["faultString"] = xmlrpc_c::value_string(get<1>(res));
+		*retvalP = xmlrpc_c::value_struct(result);
 	}
 private:
 	string _kamXmlRpc;
