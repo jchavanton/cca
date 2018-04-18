@@ -1,2 +1,2 @@
 #!/bin/sh
-docker build . -t ccc
+docker build . -t call_control_agent

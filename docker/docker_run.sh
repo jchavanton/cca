@@ -1,11 +1,11 @@
 #!/bin/sh
 
-# docker build . -t ccc
-IMAGE="ccc"
-docker stop ccc
-docker rm ccc
+# docker build . -t call_control_agent
+IMAGE="call_control_agent"
+docker stop call_control_agent
+docker rm call_control_agent
 docker run -d \
-        --name=ccc \
+        --name=call_control_agent \
         --net=host \
         --cap-add=IPC_LOCK \
         --cap-add=SYS_NICE \
