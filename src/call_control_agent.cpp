@@ -66,7 +66,7 @@ map<string, xmlrpc_c::value> kam_dlg_dlg_list(string const kamXmlRpc, string con
 	return callInfo;
 }
 
-int kam_dlg_list(string const kamXmlRpc) {
+std::tuple<int, string> kam_dlg_list(string const kamXmlRpc) {
 	try {
 		string const methodName("dlg.list");
 		xmlrpc_c::clientSimple myClient;
@@ -88,11 +88,12 @@ int kam_dlg_list(string const kamXmlRpc) {
 		}
 	} catch (exception const& e) {
 		cerr << "[dlg.list] client threw error: " << e.what() << endl;
-		return 500;
+		return make_tuple(500, e.what());
 	} catch (...) {
 		cerr << "[dlg.list] client threw unexpected error." << endl;
+		return make_tuple(500, "unexpected error");
 	}
-	return 200;
+	return make_tuple(200, "OK");
 }
 
 std::tuple<int, string> kam_dlg_terminate_dlg(string const kamXmlRpc, string const callId, string const fromTag, string const toTag) {
@@ -108,7 +109,6 @@ std::tuple<int, string> kam_dlg_terminate_dlg(string const kamXmlRpc, string con
 		xmlrpc_c::value_string toTagParam(toTag);
 		paramList.add(toTagParam);
 		myClient.call(kamXmlRpc, methodName, paramList, &result);
-
 	} catch (exception const& e) {
 		cerr << "[dlg.terminate_dlg] client threw error: " << e.what() << endl;
 		return make_tuple(500, e.what());
@@ -116,6 +116,7 @@ std::tuple<int, string> kam_dlg_terminate_dlg(string const kamXmlRpc, string con
 		cerr << "[dlg.terminate_dlg] client threw unexpected error." << endl;
 		return make_tuple(500, "unexpected error");
 	}
+	cout << "[dlg.terminate_dlg] 200 OK" << endl;
 	return make_tuple(200, "OK");
 }
 
@@ -166,7 +167,7 @@ int main(int argc, char **argv) {
 
 	int port = 8080;
 	string kamXmlRpc = "http://127.0.0.1:4291/RPC2";
-	string abyssLogFileName = "/tmp/abyss.log";
+	string abyssLogFileName = "";
 	int opt;
 	while ((opt = getopt(argc, argv, "p:s:l:c")) != -1) {
 		switch (opt) {
