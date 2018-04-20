@@ -1,2 +1,12 @@
 #!/bin/sh
-call_control_agent -p 4291 -l "/var/log/ccc.log" -s "147.75.69.33:4291"
+LOCAL_PORT=${LOCAL_PORT=4291}
+LOG_FILE=${LOG_FILE=""}
+KAM_SOCK=${KAM_SOCK=127.0.0.1:4292}
+
+ARGS="-p $LOCAL_PORT -s $KAM_SOCK"
+if [ "$LOG_FILE" != "" ] ; then
+	ARGS="$ARGS -l ${LOG_FILE}"
+fi
+CMD="call_control_agent"
+echo "\nRunning: $CMD $ARGS"
+exec $CMD $ARGS
