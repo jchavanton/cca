@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
 
 	int port = 8080;
 	string kamXmlRpc = "http://127.0.0.1:4291/RPC2";
-	string abyssLogFileName = "";
+	string abyssLogFileName;
 	int opt;
 	while ((opt = getopt(argc, argv, "p:s:l:c")) != -1) {
 		switch (opt) {
@@ -194,12 +194,12 @@ int main(int argc, char **argv) {
 		xmlrpc_c::methodPtr const MethodDlgTerminateP(new MethodDlgTerminate(kamXmlRpc));
 		myRegistry.addMethod("mi", MethodDlgTerminateP);
 
-		xmlrpc_c::serverAbyss myAbyssServer(
-			xmlrpc_c::serverAbyss::constrOpt()
-				.registryP(&myRegistry)
-				.portNumber(port)
-				.logFileName(abyssLogFileName)
-		);
+		xmlrpc_c::serverAbyss::constrOpt abyssOpt;
+		abyssOpt.registryP(&myRegistry);
+		abyssOpt.portNumber(port);
+		if (abyssLogFileName.length() > 0)
+				abyssOpt.logFileName(abyssLogFileName);
+		xmlrpc_c::serverAbyss myAbyssServer(abyssOpt);
 		cout << "server listening on port: "<< port << endl;
 		myAbyssServer.run();
 		// xmlrpc_c::serverAbyss.run() never returns
