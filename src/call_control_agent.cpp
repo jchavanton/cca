@@ -38,7 +38,7 @@ map<string, xmlrpc_c::value> kam_dlg_dlg_list(string const kamXmlRpc, string con
 		myClient.call(kamXmlRpc, methodName, paramList, &result);
 
 		if (result.type() != xmlrpc_c::value::TYPE_STRUCT) {
-				cout << "[dlg.dlg_list] call not found" << endl;
+				cout << "[dlg.dlg_list] call not found\n";
 				map<string, xmlrpc_c::value> empty;
 				return empty;
 		}
@@ -54,7 +54,8 @@ map<string, xmlrpc_c::value> kam_dlg_dlg_list(string const kamXmlRpc, string con
 		xmlrpc_c::value_struct caller_struct = xmlrpc_c::value_struct(callInfo["caller"]);
 		map<string, xmlrpc_c::value> caller_cstruct(caller_struct);
 		string fromtag = xmlrpc_c::value_string(caller_cstruct["tag"]);
-		cout << "[dlg.dlg_list] call["<< callId <<"]fromtag["<< fromtag <<"]totag["<< totag <<"]state["<<callState<<"]"<<endl;
+		string output = "[dlg.dlg_list] call["+callId+"]fromtag["+fromtag+"]totag["+totag+"]state["+to_string(callState)+"]\n";
+		cout << output;
 		return callInfo;
 
 	} catch (exception const& e) {
@@ -73,7 +74,8 @@ std::tuple<int, string> kam_dlg_list(string const kamXmlRpc) {
 		xmlrpc_c::value result;
 		myClient.call(kamXmlRpc, methodName, &result);
 		xmlrpc_c::value_array arrayData(result);
-		cout << "calls : " << arrayData.size() << endl;
+		string output = "calls : " + to_string( arrayData.size()) + "\n";
+		cout << output;
 		vector<xmlrpc_c::value> callValues = arrayData.vectorValueValue();
 		while (!callValues.empty()) {
 			xmlrpc_c::value call = callValues.back();
@@ -120,6 +122,7 @@ std::tuple<int, string> kam_dlg_terminate_dlg(string const kamXmlRpc, string con
 	return make_tuple(200, "OK");
 }
 
+
 class MethodDlgTerminate : public xmlrpc_c::method {
 public:
 	MethodDlgTerminate(string const kamXmlRpc) {
@@ -132,7 +135,9 @@ public:
 		string const method(paramList.getString(0));
 		string const callId(paramList.getString(1));
 		string const fromTag(paramList.getString(2));
-		cout << "[received][mi] method["<<method<<"]callid["<<callId<<"]fromtag["<<fromTag<<"]\n";
+
+		string output = "[received][mi] method["+method+"]callid["+callId+"]fromtag["+fromTag+"]\n";
+		cout << output;
 		paramList.verifyEnd(3);
 		map<string, xmlrpc_c::value> result;
 
