@@ -168,13 +168,15 @@ private:
 };
 
 int main(int argc, char **argv) {
-	cout<<"\nusage: "<< argv[0] << " -p <local_port> -s <kamailio_ip:port> -l <log_filename> -c show active calls at startup \n\n";
+	cout<<"\nusage: "<< argv[0] << " -p <local_port> -s <kamailio_ip:port> -l <log_filename> -m max_connections -c show active calls at startup \n\n";
 
 	int port = 8080;
 	string kamXmlRpc = "http://127.0.0.1:4291/RPC2";
 	string abyssLogFileName;
+	int maxConn{250};
+	int maxConnBacklog{250};
 	int opt;
-	while ((opt = getopt(argc, argv, "p:s:l:c")) != -1) {
+	while ((opt = getopt(argc, argv, "p:s:l:c:m")) != -1) {
 		switch (opt) {
 			case 'p':
 				port = atoi(optarg);
@@ -185,6 +187,10 @@ int main(int argc, char **argv) {
 				break;
 			case 'l':
 				abyssLogFileName = optarg;
+				break;
+			case 'm':
+				maxConn = atoi(optarg);
+				maxConnBacklog = maxConn;
 				break;
 			case 'c':
 				kam_dlg_list(kamXmlRpc);
@@ -202,10 +208,12 @@ int main(int argc, char **argv) {
 		xmlrpc_c::serverAbyss::constrOpt abyssOpt;
 		abyssOpt.registryP(&myRegistry);
 		abyssOpt.portNumber(port);
+		abyssOpt.maxConn(maxConn);
+		abyssOpt.maxConnBacklog(maxConnBacklog);
 		if (abyssLogFileName.length() > 0)
 				abyssOpt.logFileName(abyssLogFileName);
 		xmlrpc_c::serverAbyss myAbyssServer(abyssOpt);
-		cout << "server listening on port: "<< port << endl;
+		cout << "server listening on port: "<< port << " max connections:"<< maxConn <<endl;
 		myAbyssServer.run();
 		// xmlrpc_c::serverAbyss.run() never returns
 		assert(false);
