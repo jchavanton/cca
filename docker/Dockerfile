@@ -1,12 +1,13 @@
 
-FROM debian
-
+FROM debian:stretch
+ENV VERSION="max_conn"
 ENV DEB_PKG="libxml2 libcurl3"
 ENV DEB_PKG_TMP="build-essential git libxml2-dev libcurl4-openssl-dev"
 
 RUN echo "building CCA (call control agent)" \
 	&& apt-get update && apt-get -y install ${DEB_PKG} ${DEB_PKG_TMP} \
 	&& mkdir /git && cd /git && git clone https://github.com/jchavanton/cca.git && cd cca \
+	&& git checkout ${VERSION} \
 	&& git submodule update --init && cd xmlrpc && ./configure && make && make install \
 	&& cd .. && make && make install \
 	&& cd .. && rm -rf cca \
