@@ -168,7 +168,7 @@ private:
 };
 
 int main(int argc, char **argv) {
-	cout<<"\nusage: "<< argv[0] << " -p <local_port> -s <kamailio_ip:port> -l <log_filename> -m max_connections -c show active calls at startup \n\n";
+	cout<<"\nusage: "<< argv[0] << " -p <local_port> -s <kamailio_ip:port> -l <log_filename> -m <max_connections> -c show active calls at startup \n\n";
 
 	int port = 8080;
 	string kamXmlRpc = "http://127.0.0.1:4291/RPC2";
