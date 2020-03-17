@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
 	int maxConn{250};
 	int maxConnBacklog{250};
 	int opt;
-	while ((opt = getopt(argc, argv, "p:s:l:c:m")) != -1) {
+	while ((opt = getopt(argc, argv, "p:s:l:c:m:")) != -1) {
 		switch (opt) {
 			case 'p':
 				port = atoi(optarg);
