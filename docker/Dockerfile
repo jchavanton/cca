@@ -1,6 +1,6 @@
 
 FROM debian:stretch
-ENV VERSION="0.0.6"
+ENV VERSION="0.0.7"
 ENV DEB_PKG="libxml2 libcurl3"
 ENV DEB_PKG_TMP="build-essential git libxml2-dev libcurl4-openssl-dev"
 
