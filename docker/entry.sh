@@ -10,6 +10,11 @@ if [ "$LOG_FILE" != "" ] ; then
       ARGS="$ARGS -l ${LOG_FILE}"
 fi
 
-CMD="call_control_agent"
-echo "\n Running: $CMD $ARGS"
-exec $CMD $ARGS
+if [ "$1" = "" ]; then
+	CMD="call_control_agent ${ARGS}"
+else
+	CMD="$*"
+fi
+
+echo "\n Running: ${CMD}"
+exec ${CMD}
