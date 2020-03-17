@@ -1,6 +1,6 @@
 
 FROM debian:stretch
-ENV VERSION="0.0.5"
+ENV VERSION="0.0.6"
 ENV DEB_PKG="libxml2 libcurl3"
 ENV DEB_PKG_TMP="build-essential git libxml2-dev libcurl4-openssl-dev"
 
@@ -12,7 +12,7 @@ RUN echo "building CCA (call control agent)" \
 	&& cd .. && make && make install \
 	&& cd .. && rm -rf cca \
 	&& apt-get remove -y ${DEB_PKG_TMP} \
->--&& apt-get clean && apt-get autoclean && apt-get -y autoremove
+	&& apt-get clean && apt-get autoclean && apt-get -y autoremove
 
 COPY Dockerfile /
 COPY entry.sh /
